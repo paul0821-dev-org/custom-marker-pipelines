@@ -15,7 +15,8 @@ pipeline {
   stages {
     stage('Test') {
       agent {
-        label 'nodejs-testcafe'
+        kubernetes {
+          label 'nodejs-testcafe'
           yaml testPodYaml
         }
       }
