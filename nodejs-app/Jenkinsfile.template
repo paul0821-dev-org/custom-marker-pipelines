@@ -23,8 +23,14 @@ pipeline {
       steps {
         checkout scm
         container('nodejs') {
-          echo 'Hello World!'   
-          sh 'node --version'
+          sh '''
+            npm install express
+            npm install pug --save
+            node ./hello.js &
+          '''
+        }
+        container('testcafe') {
+          sh '/opt/testcafe/docker/testcafe-docker.sh "chromium --no-sandbox" tests/*.js -r xunit:res.xml'
         }
       }
       post {
@@ -46,6 +52,9 @@ pipeline {
       post {
         success {
           slackSend "${JOB_NAME} pipeline job is awaiting approval at: ${RUN_DISPLAY_URL}"
+        }
+        always {
+          junit 'res.xml'
         }
       }
     }
