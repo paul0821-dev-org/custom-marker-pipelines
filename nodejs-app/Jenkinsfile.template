@@ -1,3 +1,5 @@
+library 'cd-accel'
+def testPodYaml = libraryResource 'podtemplates/nodejs-app/web-test-pod.yml'
 pipeline {
   agent none
   options { 
@@ -13,25 +15,8 @@ pipeline {
   stages {
     stage('Test') {
       agent {
-        kubernetes {
-          label 'nodejs-app-inline'
-          yaml """
-kind: Pod
-metadata:
-  name: nodejs-app
-spec:
-  containers:
-  - name: nodejs
-    image: node:10.10.0-alpine
-    command:
-    - cat
-    tty: true
-  - name: testcafe
-    image: 946759952272.dkr.ecr.us-east-1.amazonaws.com/kypseli/testcafe:alpha-1
-    command:
-    - cat
-    tty: true
-          """
+        label 'nodejs-testcafe'
+          yaml testPodYaml
         }
       }
       steps {
